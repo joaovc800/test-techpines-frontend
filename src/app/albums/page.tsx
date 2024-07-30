@@ -100,7 +100,7 @@ export default function Albums() {
                 <Card
                   key={index}
                   description={`${album.artist} - ${album.release_year}`}
-                  buttonText='View Album'
+                  buttonAlbum='View Album'
                   title={album.name}
                   idAlbum={album.id}
                 />
