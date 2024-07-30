@@ -13,6 +13,21 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      animation: {
+        'scale-modal-in': 'scaleModalIn 200ms linear',
+      },
+      keyframes: {
+        scaleModalIn: {
+          from : { 
+            opacity: "0",
+            transform: "translate(-50%, -48%) scale(0.96)"
+          },
+          to: {
+            opacity: "1",
+            transform: "translate(-50%, -50%) scale(1)"
+          }
+        }
+      }
     },
   },
   plugins: [],

@@ -44,7 +44,7 @@ const Card = (props: CardProps) => {
               className='bg-black/25 fixed inset-0'
             />
             <Dialog.Content
-              className='bg-white rounded-md shadow-sm fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] p-4'
+              className='bg-white rounded-md shadow-sm fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] p-4 animate-scale-modal-in'
             >
               <header className='flex flex-1'>
                 <Dialog.Close className='ml-auto'>
