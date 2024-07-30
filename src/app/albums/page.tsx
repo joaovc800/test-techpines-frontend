@@ -102,6 +102,7 @@ export default function Albums() {
                   description={`${album.artist} - ${album.release_year}`}
                   buttonText='View Album'
                   title={album.name}
+                  idAlbum={album.id}
                 />
               )):
               (<p className='text-red-400'>Album not found</p>)
