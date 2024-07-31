@@ -2,9 +2,11 @@
 import { useState } from 'react';
 import Image from "next/image";
 import * as Form from '@radix-ui/react-form';
-import { Headphones, Play} from "@phosphor-icons/react";
+import { Headphones, Plus, Trash} from "@phosphor-icons/react";
 import Modal from '../components/Modal'
-import { Toaster, toast } from 'sonner'
+import Track from '../components/Track'
+import { toast } from 'sonner'
+import * as Dialog from '@radix-ui/react-dialog';
 
 type CardProps = {
   image?: string
@@ -12,7 +14,7 @@ type CardProps = {
   description: string
   buttonAlbum: string
   idAlbum: number
-  onButtonClick?: () => void;
+  onDelete?: () => void;
 }
 
 function formatTime(minutesprop: number) {
@@ -60,6 +62,13 @@ const Card = (props: CardProps) => {
     tracks: []
   });
 
+  const [formTrackName, setFormTrackName] = useState("")
+  const [formDuration, setFormDuration] = useState(0)
+
+  const [modalTrack, setModalTrack] = useState(false)
+
+  
+
   async function fetchAlbumsById(id: number) {
     
     try {
@@ -72,23 +81,18 @@ const Card = (props: CardProps) => {
       
     } catch (error) {
       console.error('Error', error);
-      
-    } finally{
-      console.log(album)
     }
   }
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = Object.fromEntries(new FormData(event.currentTarget));
-
+  async function postTrack() {
+    
     try {
-        const response = await fetch('http://localhost:8000/api/v1/track/', {
+      const response = await fetch('http://localhost:8000/api/v1/track/', {
         method: "POST",
         body: JSON.stringify({
-          "album_id": parseInt(form.album_id as string, 10),
-          "duration": parseInt(form.duration as string, 10),
-          "name": form.name
+          "name": formTrackName,
+          "duration": formDuration,
+          "album_id": props.idAlbum
         }),
         headers: {
           "Content-Type": "application/json",
@@ -100,127 +104,152 @@ const Card = (props: CardProps) => {
       }
       const data = await response.json();
 
-      toast.success(data.message, {
-        duration: 3000,
-      })
+      if(!data.data){
+        const messages = Object.values(data).flat().join(", ");
+        toast.custom((t) => (
+          <div className={`bg-red-500 text-white p-4 rounded`}>
+            {messages || 'An unknown error occurred'}
+          </div>
+        ))
+
+        return
+      }
       
+      toast.success(data.message)
+
+      setModalTrack(false)
+
     } catch (error) {
       console.error('Erro ao buscar álbuns:', error);
     }
-    
-  };
+  }
 
   return (
-    <div className="w-full h-full bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
-      {
-        props.image ? (
-          <Image
-              src={props.image}
-              alt={props.title}
-              width={150}
-              height={24}
-              priority
-          />
-        ) : null
-      }
-      <div className="p-4">
-        <h2 className="text-2xl font-bold text-gray-900">{props.title}</h2>
-        <p className="mt-2 text-gray-700">
-          {props.description}
-        </p>
-        <div className='flex flex-row items-center justify-between'>
-          <Modal
-            description={props.title}
-            idAlbum={props.idAlbum}
-            title={props.title}
+    <div className="w-full h-full flex flex-col bg-white border border-gray-200 shadow-md overflow-hidden">
+      <div className='w-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-purple-500'>
+        <Headphones
+          className='w-36 h-36 text-white'
+        />
+      </div>
+      <div className="p-4 flex flex-col justify-between flex-grow">
+        <Modal
+          description={props.title}
+          idAlbum={props.idAlbum}
+          title={props.title}
+        >
+          <div 
+            className='flex flex-col gap-2 cursor-pointer hover:underline'
+            onClick={() => fetchAlbumsById(props.idAlbum)}
           >
-            <button
-                onClick={() => fetchAlbumsById(props.idAlbum)}
-                className="mt-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow"
-            >
-              View Album
-            </button>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {props.title}
+            </h2>
+            {props.description}
+          </div>
 
-            <div className='flex flex-col items-center gap-2'>
-              <div className='w-44 h-44 bg-slate-300 flex items-center justify-center'>
-                <Headphones
-                  className='w-14 h-14 text-white'
+          <div className='flex flex-col gap-5 w-full'>
+            <div className='flex flex-col lg:flex-row items-center gap-10'>
+              <div className='flex items-center'>
+                <Image
+                  className="rounded-sm"
+                  src="/disco.jpg"
+                  alt="Dupla Caipira Tião Carreiro e  Pardinho"
+                  width={200}
+                  height={200}
+                  priority
                 />
               </div>
-              <p>{props.title}</p>
-              <p>{props.description}</p>
+              <div className='flex flex-col gap-3'>
+                <h1 className='font-extrabold text-4xl'>
+                  {props.title}
+                </h1>
+                <p>{props.description}</p>
+                <p className='text-slate-500'>
+                  {
+                    album ? `
+                      ${album.tracks.length} tracks | ${album.release_year} | ${formatTime(album.tracks.reduce((sum, track) => sum + track.duration, 0))} | 324.408 fãs
+                    ` : ""
+                  }
+                </p>
+              </div>
             </div>
-            <div className='w-full px-4'>
-              <ul className='overflow-auto h-72'>
-                {
-                  album.tracks.length > 0 ?
-                    album.tracks.map(track => (
-                      <li key={track.id} className="cursor-pointer flex flex-row items-center justify-between w-full bg-slate-50 p-2 hover:bg-slate-200">
-                        <div className='flex items-center gap-3'>
-                          <Play/>
-                          <span>{track.name}</span>
-                        </div>
-                        <span>{formatTime(track.duration)}</span>
-                      </li>
-                    ))
-                  :
-                  <li>No sound tracks yet</li>
-                }
-              </ul>
+            <div className='p-4 w-full'>
+              <h1 className='font-bold text-2xl border-b py-1'>Tracks</h1>
+              <div className='w-full mt-3'>
+                <Track
+                  data={album.tracks}
+                  search={false}
+                />
+              </div>
             </div>
-          </Modal>
-          <Modal
-            title={`New Track in ${props.title}`}
-            description={`New Track in ${props.title}`}
-            idAlbum={props.idAlbum}
-          >
-            <button
-                className="mt-4 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow"
-            >
-              New Track
-            </button>
+          </div>
+        </Modal>
+        
+        <div className='flex gap-2 mt-3'>
+          <Dialog.Root open={modalTrack} onOpenChange={setModalTrack}>
+            <Dialog.Trigger asChild>
+              <button className='rounded-full bg-purple-400 p-3'>
+                <Plus
+                  className='text-white'
+                />
+              </button>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Overlay className="bg-black/25 fixed inset-0" />
+              <Dialog.Content className="bg-white rounded-md shadow-sm overflow-auto fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] p-4 animate-scale-modal-in">
+                <Dialog.Title className="font-bold text-2xl">New track</Dialog.Title>
+                <Dialog.Description className="DialogDescription">
+                  Add a new track in album { props.title }
+                </Dialog.Description>
+                <div className='mt-4 flex flex-col gap-4'>
+                  <label className='cursor-pointer text-sm px-1'>
+                    Track name
+                    <div className='flex items-center py-2 px-3 bg-slate-200 rounded-md gap-3 mt-1 w-full'>
+                      <input
+                        id='name'
+                        type="text"
+                        placeholder='Track name'
+                        className='bg-transparent w-full outline-none py-1'
+                        onChange={(e) => setFormTrackName(e.target.value)}
+                      />
+                    </div>
+                  </label>
+                  <label className='cursor-pointer text-sm px-1'>
+                    Duration in minutes
+                    <div className='flex items-center py-2 px-3 bg-slate-200 rounded-md gap-3 mt-1 w-full'>
+                      <input
+                        id='duration'
+                        type="number"
+                        placeholder='Duration track'
+                        className='bg-transparent w-full outline-none py-1'
+                        onChange={(e) => setFormDuration(parseInt(e.target.value))}
+                      />
+                    </div>
+                  </label>
+                </div>
+                  
+                <div className="flex justify-end mt-5">
+                  <button 
+                    className="bg-purple-400 p-2 text-white rounded-md"
+                    onClick={postTrack}
+                  >
+                    Save track
+                  </button>
+                </div>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
 
-            <Form.Root className="w-full" onSubmit={handleSubmit}>
-              <Form.Field className="mb-4" name="name">
-                <div className='flex align-baseline justify-between'>
-                  <Form.Label className="FormLabel">Name Track</Form.Label>
-                  <Form.Message className="text-red-500" match="valueMissing">
-                    Please enter a name
-                  </Form.Message>
-                </div>
-                <Form.Control asChild>
-                  <input className="p-2 border border-slate-400 outline-none w-full" type="text" required />
-                </Form.Control>
-              </Form.Field>
-              <Form.Field className="mb-4" name="duration">
-                <div className='flex align-baseline justify-between'>
-                  <Form.Label className="FormLabel">Duration track in minutes</Form.Label>
-                  <Form.Message className="text-red-500" match="valueMissing">
-                    Please enter a duration track
-                  </Form.Message>
-                </div>
-                <Form.Control asChild>
-                  <input className="p-2 border border-slate-400 outline-none w-full" type="number" required />
-                </Form.Control>
-              </Form.Field>
-              <Form.Field className="hidden" name="album_id">
-                <Form.Control asChild>
-                  <input type="number" value={props.idAlbum} required />
-                </Form.Control>
-              </Form.Field>
-              <Form.Submit asChild>
-                <button 
-                  className="mt-4 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow"
-                  type='submit'
-                >
-                  Post new track
-                </button>
-              </Form.Submit>
-            </Form.Root>
-          </Modal>
+          <button 
+            className='rounded-full bg-red-400 p-3'
+            onClick={props.onDelete}
+          >
+            <Trash
+              className='text-white'
+            />
+        </button>
         </div>
       </div>
-      <Toaster />
     </div>
   );
 };

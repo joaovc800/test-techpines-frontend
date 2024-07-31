@@ -1,8 +1,7 @@
 
-import React, { useState, useEffect, ReactNode, ReactElement  } from 'react';
-import Image from "next/image";
+import React, { ReactNode, ReactElement  } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Headphones, Play} from "@phosphor-icons/react";
+import { X } from "@phosphor-icons/react";
 
 type ModalProps = {
   image?: string
@@ -29,7 +28,7 @@ const Modal = (props: ModalProps) => {
           className='bg-black/25 fixed inset-0'
         />
         <Dialog.Content
-          className='bg-white rounded-md shadow-sm fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] p-4 animate-scale-modal-in'
+          className='bg-white shadow-sm overflow-auto fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full p-4 animate-scale-modal-in'
         >
           <header className='flex flex-1'>
             <Dialog.Description className='hidden'>
