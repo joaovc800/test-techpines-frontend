@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 📦 Discography Tião Carreiro and Pardinho
 
-## Getting Started
+Bem-vindo ao **Discography**! Este é um guia rápido sobre como configurar e iniciar o projeto.
 
-First, run the development server:
+## 🚀 Instruções de Configuração
+
+Siga os passos abaixo para clonar o repositório, instalar as dependências e iniciar a aplicação.
+
+### 1. Clonar o Repositório
+
+Para começar, clone o repositório do GitHub utilizando o comando:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/joaovc800/test-techpines-frontend.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Instalar as Dependências
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Após clonar o repositório, navegue para o diretório do projeto e execute o comando abaixo para instalar todas as dependências necessárias:
+```bash
+cd nome-do-repositorio
+npm install
+```
+### 3. Iniciar a Aplicação
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Com as dependências instaladas, você pode iniciar a aplicação utilizando o comando:
+```bash
+npm run dev
+```
 
-## Learn More
+Isso iniciará o servidor de desenvolvimento e você poderá acessar a aplicação em `http://localhost:3000` (ou a porta configurada no seu projeto).
 
-To learn more about Next.js, take a look at the following resources:
+## 📚 Recursos Adicionais
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+-   Documentação do NPM
+-   GitHub - Guia de Clonagem
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## 🛠 Tecnologias Utilizadas
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+-  **React** - Biblioteca para construir interfaces de usuário
+-  **Next.js** - Framework para aplicações React com renderização no lado do servidor
+-  **Tailwind CSS** - Framework de CSS utilitário para estilização
+-  **Radix UI** - Conjunto de componentes acessíveis e prontos para React
+-  **TypeScript** - Superset do JavaScript que adiciona tipagem estática
