@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import Image from "next/image";
-import * as Form from '@radix-ui/react-form';
 import { Headphones, Plus, Trash} from "@phosphor-icons/react";
 import Modal from '../components/Modal'
 import Track from '../components/Track'
@@ -123,6 +122,9 @@ const Card = (props: CardProps) => {
       toast.success(data.message)
 
       setModalTrack(false)
+      setFormTrackName("")
+      setFormDuration(0)
+      setFormImage("")
 
     } catch (error) {
       console.error('Erro ao buscar álbuns:', error);
@@ -130,13 +132,28 @@ const Card = (props: CardProps) => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col bg-white border border-gray-200 shadow-md overflow-hidden">
-      <div className='w-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-purple-500'>
-        <Headphones
-          className='w-36 h-36 text-white'
-        />
-      </div>
-      <div className="p-4 flex flex-col justify-between flex-grow">
+    <div className="w-full  flex flex-col bg-white border border-gray-200 shadow-md overflow-hidden">
+      {
+        props.image && props.image.length > 0 ? (
+          <div className='w-full h-1/2 flex items-center justify-center'>
+            <img
+              src={props.image}
+              alt='Image Album'
+              className='w-full h-full'
+            />
+          </div>
+          
+        ) :
+        (
+          <div className='w-full h-1/2 flex items-center justify-center bg-gradient-to-br from-slate-100 to-purple-500'>
+            <Headphones
+              className='w-36 h-36 text-white'
+            />
+          </div>
+        )
+      }
+      
+      <div className="p-4 flex flex-col justify-between h-1/2 flex-grow">
         <Modal
           description={props.title}
           idAlbum={props.idAlbum}
@@ -155,14 +172,25 @@ const Card = (props: CardProps) => {
           <div className='flex flex-col gap-5 w-full'>
             <div className='flex flex-col lg:flex-row items-center gap-10'>
               <div className='flex items-center'>
-                <Image
-                  className="rounded-sm"
-                  src="/disco.jpg"
-                  alt="Dupla Caipira Tião Carreiro e  Pardinho"
-                  width={200}
-                  height={200}
-                  priority
-                />
+              {
+                props.image && props.image.length > 0 ? (
+                  <div className='w-full flex items-center justify-center'>
+                    <img
+                      src={props.image}
+                      alt='Image Album'
+                      className='w-52 h-52 rounded-md'
+                    />
+                  </div>
+                  
+                ) :
+                (
+                  <div className='w-full h-full rounded-md flex items-center justify-center bg-gradient-to-br from-slate-100 to-purple-500'>
+                    <Headphones
+                      className='w-52 h-52 text-white'
+                    />
+                  </div>
+                )
+              }
               </div>
               <div className='flex flex-col gap-3'>
                 <h1 className='font-extrabold text-4xl'>

@@ -83,9 +83,9 @@ const Track = (props: TrackProps) => {
       }
   }, [debouncedValue, props.search]);
 
-  /* useEffect(() => {
+  useEffect(() => {
     setTracks(props.data);
-  }, [props.data]) */
+  }, [props.data])
 
   async function deleteTrack(trackId: number){
     try {
@@ -134,16 +134,23 @@ const Track = (props: TrackProps) => {
       <ul className='overflow-auto'>
         {
           tracks.length > 0 ?
-            tracks.map(track => (
-              <li key={track.id} className="cursor-pointer flex flex-row items-center justify-between w-full p-2 hover:bg-slate-200">
+            tracks.map((track, index) => (
+              <li key={track.id} className="cursor-pointer flex flex-row items-center justify-between w-full p-2 hover:bg-purple-200">
                 <div className='flex items-center gap-3'>
-                  <Play/>
-                  <span>{track.name}</span>
+                  {
+                    track.image && track.image.length > 0 ? (
+                      <img
+                        src={track.image}
+                        className='w-14 rounded-md'
+                      />
+                    ) : <Play/>
+                  }
+                  <span>{index + 1}. {track.name}</span>
                 </div>
                 <div className='flex flex-row items-center gap-2'>
                   <span>{formatTime(track.duration)}</span>
                   <Trash
-                    className='text-red-500'
+                    className='text-red-500 w-6 h-6'
                     onClick={() => deleteTrack(track.id)}
                   />
                 </div>

@@ -302,6 +302,7 @@ export default function Albums() {
                     buttonAlbum='View Album'
                     title={album.name}
                     idAlbum={album.id}
+                    image={album.image}
                     onDelete={() => deleteAlbum(album.id)}
                   />
                 ))
