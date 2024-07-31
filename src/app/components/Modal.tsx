@@ -8,7 +8,6 @@ type ModalProps = {
   image?: string
   title: string
   description: string
-  buttonAlbum: string
   idAlbum: number
   onButtonClickAlbum?: () => void;
   children?: ReactNode;
