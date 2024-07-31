@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Image from "next/image";
 import * as Form from '@radix-ui/react-form';
-import { X, Headphones, Play} from "@phosphor-icons/react";
+import { Headphones, Play} from "@phosphor-icons/react";
 import Modal from '../components/Modal'
 import { Toaster, toast } from 'sonner'
 

@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Card from '../components/Card';
 import Loading from '../components/Loading';
-import * as Dialog from '@radix-ui/react-dialog';
-import { X } from "@phosphor-icons/react";
+import * as Form from '@radix-ui/react-form';
+import Modal from "../components/Modal";
+import { Toaster, toast } from 'sonner'
 
 export default function Albums() {
 
@@ -21,6 +22,55 @@ export default function Albums() {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = Object.fromEntries(new FormData(event.currentTarget));
+
+    try {
+        const response = await fetch('http://localhost:8000/api/v1/album/', {
+        method: "POST",
+        body: JSON.stringify({
+          "release_year": parseInt(form.release_year as string, 10),
+          "artist": form.artist,
+          "name": form.name
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+
+      if(data.data){
+        toast.success(data.message, {
+          duration: 3000,
+        })
+  
+        setAlbums(prevAlbums => [...prevAlbums, data.data]);
+      }else{
+        toast.custom((t) => (
+          <div className='bg-red-400 text-white p-4 rounded-md'>
+            <ul>
+              {
+                Object.values(data).map((item: any, index: number) => (
+                  <li key={index}>{item}</li>
+                ))
+              }
+            </ul>
+          </div>
+        ))
+      }
+      
+      
+    } catch (error) {
+      console.error('Erro ao buscar álbuns:', error);
+    }
+    
+  };
 
   async function fetchAlbums(name?: string) {
     setLoading(true)
@@ -40,11 +90,7 @@ export default function Albums() {
     }
   }
   
-  useEffect(() => {
-    fetchAlbums();
-  }, []);
-
-
+  useEffect(() => { fetchAlbums() }, []);
 
   return (
     <div className='flex flex-col h-screen'> 
@@ -66,29 +112,63 @@ export default function Albums() {
               Apply
             </button>
           </div>
-          <Dialog.Root>
-            <Dialog.Trigger asChild>
-              <button
-                className='bg-black px-4 text-white font-bold flex justify-center items-center w-48 cursor-pointer'
-              >
-                New Album
-              </button>
-            </Dialog.Trigger>
-            <Dialog.Portal>
-              <Dialog.Overlay
-                className='bg-black/25 fixed inset-0'
-              />
-              <Dialog.Content
-                className='bg-white rounded-md shadow-sm fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] p-4'
-              >
-                <header className='flex flex-1'>
-                  <Dialog.Close className='ml-auto'>
-                    <X className="w-6 h-6"/>
-                  </Dialog.Close>
-                </header>
-              </Dialog.Content>
-            </Dialog.Portal>
-          </Dialog.Root>
+          <Modal
+            description='New Album'
+            idAlbum={0}
+            title='New Album'
+          >
+            <button
+              className='bg-black px-4 text-white font-bold flex justify-center items-center w-48 cursor-pointer'
+            >
+              New Album
+            </button>
+
+            <Form.Root className="w-full" onSubmit={handleSubmit}>
+              <Form.Field className="mb-4" name="name">
+                <div className='flex align-baseline justify-between'>
+                  <Form.Label className="FormLabel">Name Album</Form.Label>
+                  <Form.Message className="text-red-500" match="valueMissing">
+                    Please enter a name album
+                  </Form.Message>
+                </div>
+                <Form.Control asChild>
+                  <input className="p-2 border border-slate-400 outline-none w-full" type="text" required />
+                </Form.Control>
+              </Form.Field>
+              <Form.Field className="mb-4" name="artist">
+                <div className='flex align-baseline justify-between'>
+                  <Form.Label className="FormLabel">Name artist</Form.Label>
+                  <Form.Message className="text-red-500" match="valueMissing">
+                    Please enter a name artist
+                  </Form.Message>
+                </div>
+                <Form.Control asChild>
+                  <input className="p-2 border border-slate-400 outline-none w-full" type="text" required />
+                </Form.Control>
+              </Form.Field>
+              <Form.Field className="mb-4" name="release_year">
+                <div className='flex align-baseline justify-between'>
+                  <Form.Label className="FormLabel">Release Year</Form.Label>
+                  <Form.Message className="text-red-500" match="valueMissing">
+                    Please enter a release year
+                  </Form.Message>
+                </div>
+                <Form.Control asChild>
+                  <input className="p-2 border border-slate-400 outline-none w-full" type="number" maxLength={4} required />
+                </Form.Control>
+              </Form.Field>
+              
+              
+              <Form.Submit asChild>
+                <button 
+                  className="mt-4 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow"
+                  type='submit'
+                >
+                  Post new album
+                </button>
+              </Form.Submit>
+            </Form.Root>
+          </Modal>
         </div>
         
         <div className='w-full flex flex-col gap-3'>
@@ -111,6 +191,7 @@ export default function Albums() {
           </div>
         </div>
       </div>
+      <Toaster/>
     </div>
   );
 }
