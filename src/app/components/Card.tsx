@@ -36,6 +36,7 @@ const Card = (props: CardProps) => {
   interface Track {
     id: number;
     name: string;
+    image: string;
     duration: number;
     album_id: number;
     created_at: string;
@@ -46,6 +47,7 @@ const Card = (props: CardProps) => {
     id: number;
     name: string;
     artist: string;
+    image: string;
     release_year: number;
     created_at: string;
     updated_at: string;
@@ -56,6 +58,7 @@ const Card = (props: CardProps) => {
     id: 0,
     name: 'Default Album',
     artist: 'Unknown Artist',
+    image: "",
     release_year: 1900,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -64,7 +67,8 @@ const Card = (props: CardProps) => {
 
   const [formTrackName, setFormTrackName] = useState("")
   const [formDuration, setFormDuration] = useState(0)
-
+  const [formImage, setFormImage] = useState("")
+  
   const [modalTrack, setModalTrack] = useState(false)
 
   
@@ -92,7 +96,8 @@ const Card = (props: CardProps) => {
         body: JSON.stringify({
           "name": formTrackName,
           "duration": formDuration,
-          "album_id": props.idAlbum
+          "album_id": props.idAlbum,
+          "image": formImage
         }),
         headers: {
           "Content-Type": "application/json",
@@ -226,6 +231,18 @@ const Card = (props: CardProps) => {
                       />
                     </div>
                   </label>
+                  <label className='cursor-pointer text-sm px-1'>
+                      URL image track (optional)
+                      <div className='flex items-center py-2 px-3 bg-slate-200 rounded-md gap-3 mt-1 w-full'>
+                        <input
+                          id='image_album'
+                          type="url"
+                          placeholder='URL image album'
+                          className='bg-transparent w-full outline-none py-1'
+                          onChange={(e) => setFormImage(e.target.value)}
+                        />
+                      </div>
+                    </label>
                 </div>
                   
                 <div className="flex justify-end mt-5">

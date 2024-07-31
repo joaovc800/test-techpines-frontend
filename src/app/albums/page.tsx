@@ -15,6 +15,7 @@ export default function Albums() {
   interface Album {
     id: number;
     name: string;
+    image: string;
     artist: string;
     release_year: number;
     created_at: string;
@@ -25,6 +26,7 @@ export default function Albums() {
     id: number;
     name: string;
     duration: number;
+    image: string;
     album_id: number;
     created_at: string;
     updated_at: string;
@@ -41,6 +43,7 @@ export default function Albums() {
 
   const [formAlbum, setFormAlbum] = useState("")
   const [formArtist, setFormArtist] = useState("")
+  const [formImage, setFormImage] = useState("")
   const [formYear, setFormYear] = useState(0)
 
   const [inputValue, setInputValue] = useState<InputValue>({ type: "track", value: "" });
@@ -122,7 +125,8 @@ export default function Albums() {
         body: JSON.stringify({
           "artist": formArtist,
           "name": formAlbum,
-          "release_year": formYear
+          "release_year": formYear,
+          "image": formImage
         }),
         headers: {
           "Content-Type": "application/json",
@@ -246,6 +250,18 @@ export default function Albums() {
                           placeholder='Release Year'
                           className='bg-transparent w-full outline-none py-1'
                           onChange={(e) => setFormYear(parseInt(e.target.value))}
+                        />
+                      </div>
+                    </label>
+                    <label className='cursor-pointer text-sm px-1'>
+                      URL image album (optional)
+                      <div className='flex items-center py-2 px-3 bg-slate-200 rounded-md gap-3 mt-1 w-full'>
+                        <input
+                          id='image_album'
+                          type="url"
+                          placeholder='URL image album'
+                          className='bg-transparent w-full outline-none py-1'
+                          onChange={(e) => setFormImage(e.target.value)}
                         />
                       </div>
                     </label>
